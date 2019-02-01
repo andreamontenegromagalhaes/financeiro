@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/masterPage.xhtml">
+
+	<ui:define name="menu">
+		<ui:include src="/includes/menu.xhtml" />
+	</ui:define>
+
+	<ui:define name="corpo">
+		<h:form id="frmGrupo">
+			<p:dataTable id="tbGrupo"
+				widgetVar="tabelaGrupo"
+				emptyMessage="Nenhum registro encontrado"
+				value="#{MBGrupo.itens}" var="item" filteredValue="#{MBGrupo.itensFiltrados}" paginator="true" rows="10">
+				<f:facet name="header"> Lista de Grupos</f:facet>
+				<p:column headerText="Grupo" sortBy="#{item.grupo}" filterBy="#{item.grupo}">
+					<h:outputText value="#{item.grupo}" />
+				</p:column>
+
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash" oncomplete="PF('dlgGruExcluir').show();" update=":frmExcluirGrupo:pnlExcluirGrupo">
+						<f:setPropertyActionListener value="#{item}" target="#{MBGrupo.grupo}"></f:setPropertyActionListener>
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil"  oncomplete="PF('dlgGruEditar').show();" update=":frmEditarGrupo:pnlEditarGrupo">
+						<f:setPropertyActionListener value="#{item}" target="#{MBGrupo.grupo}"></f:setPropertyActionListener>
+					</p:commandButton>
+				</p:column>
+				
+				
+				<f:facet name="footer">
+					<p:commandButton value="Novo" actionListener="#{MBGrupo.prepararNovo}" oncomplete="PF('dlgGruNovo').show();" update=":frmNovoGrupo:pnlNovoGrupo"/>
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<p:dialog widgetVar="dlgGruNovo" closable="false" draggable="false" resizable="false"
+			header="Cadastrar Grupo"
+			modal = "true"
+			appendTo="@(body)"> 
+			<h:form id="frmNovoGrupo">
+				<h:panelGrid id="pnlNovoGrupo" columns="2">
+					<h:outputLabel value="Grupo: "/>
+					<h:inputText size="100" maxlength="100" value="#{MBGrupo.grupo.grupo}" required="true" requiredMessage="Informe o grupo." />
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar" actionListener="#{MBGrupo.novo}" oncomplete="verificaCampos(xhr, status, args, 'dlgGruNovo', 'tbGrupo');" update=":frmNovoGrupo:pnlNovoGrupo :msgGlobal" />
+					<p:commandButton value="Voltar" onclick="PF('dlgGruNovo').hide(); PF(tabelaGrupo).clearFilters();" update=":frmGrupo:tbGrupo"/>
+				</h:panelGrid>
+			</h:form>	
+		</p:dialog>
+		<p:dialog widgetVar="dlgGruExcluir" closable="false" draggable="false" resizable="false"
+			header="Confirmação de Exclusão"
+			modal = "true"
+			appendTo="@(body)"> 
+			
+			<h:form id="frmExcluirGrupo">
+				<h:panelGrid id="pnlExcluirGrupo" columns="2">
+					<h:outputText value="Nome"/>
+					<h:outputText value="#{MBGrupo.grupo.grupo}"/>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2">
+					<p:commandButton value="Excluir" actionListener="#{MBGrupo.excluir}" onclick="PF('dlgGruExcluir').hide(); PF(tabelaGrupo).clearFilters();" update=":frmExcluirGrupo:pnlExcluirGrupo :msgGlobal" />
+					<p:commandButton value="Voltar" onclick="PF('dlgGruExcluir').hide(); PF(tabelaGrupo).clearFilters();" update=":frmGrupo:tbGrupo"/>
+				</h:panelGrid>
+			</h:form>
+
+		</p:dialog>		
+		<p:dialog widgetVar="dlgGruEditar" closable="false" draggable="false" resizable="false"
+			header="Editar Grupo"
+			modal = "true"
+			appendTo="@(body)"> 
+			
+			<h:form id="frmEditarGrupo">
+				<h:panelGrid id="pnlEditarGrupo" columns="2">
+					<h:outputText value="Grupo"/>
+					<h:inputText value="#{MBGrupo.grupo.grupo}" required="true" requiredMessage="Informe o grupo."/>
+				</h:panelGrid>
+				
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar" actionListener="#{MBGrupo.editar}" oncomplete="verificaCampos(xhr, status, args, 'dlgGruEditar', 'tbGrupo');" update=":frmEditarGrupo:pnlEditarGrupo :msgGlobal" />
+					<p:commandButton value="Voltar" onclick="PF('dlgGruEditar').hide(); PF(tabelaGrupo).clearFilters();" update=":frmGrupo:tbGrupo"/>
+				</h:panelGrid>
+			</h:form>
+
+		</p:dialog>		
+		
+		
+	</ui:define>
+</ui:composition>
